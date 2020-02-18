@@ -9,7 +9,7 @@ fitness = x * sin(4*x) ) + ( 1.1 * y * sin( 2 * y)
 
 
 
-Directory contains:
+### Directory contains:
 - InvasiveWeed.py - python code to run the model
 - InvasiveWeed.ipynb - jupyter notebook used to run the code and render results in html
 - InvasiveWeed_results.html - HTML rendered with results after running the code on my machine
