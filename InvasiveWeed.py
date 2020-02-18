@@ -1,7 +1,16 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[37]:
+# # Invasive Weed algorithm
+# <br>
+# ### Based on fitness function to evaluate seed coordinates (x and y)
+# ```
+# fitness = x * sin(4*x) ) + ( 1.1 * y * sin( 2 * y)
+#         where 0 < x < 10 and 0 < y < 10
+# ```
+# ### Find the best seed coordinates (minimum fitness)
+
+# In[106]:
 
 
 # Import necessary libraries
@@ -15,19 +24,22 @@ import progressbar
 import matplotlib.pyplot as plt
 
 
-# In[24]:
+# In[107]:
 
 
 class InvasiveWeed(): # Define class with model name
     def __init__(self, pmax, maxiter, delta_cap, num_exceeded_delta): # Initiate class with required parameters
         seed_array = [] # Initiate empty list to contain tuples of x and y seed coordinates
-        for i in range(round(0.2*pmax)): # Initiate 50 seeds with random x and y values between 0 and 10
+        for i in range(round(0.1*pmax)): # Initiate 10% of population max seeds with random x and y values between 0 and 10
             x = random.uniform(0, 10) # x = random float between 0 and 10
             y = random.uniform(0, 10) # y = random fload between 0 and 10
-            # Append the seed to the seed_array, rounding coordinates to three decimal places
-            seed_array.append((round(x, 5),round(y, 5))) 
+            # Append the seed to the seed_array
+            seed_array.append((x,y)) 
 
         self.pmax = pmax
+        self.maxiter = maxiter
+        self.delta_cap = delta_cap
+        self.num_exceeded_delta = num_exceeded_delta
         
         # Initiate delta higher than delta_cap to avoid early iteration stoppage
         delta = delta_cap + 0.01
@@ -107,11 +119,16 @@ class InvasiveWeed(): # Define class with model name
             # add to the counter for threshold of num_exceeded_data
             if delta < delta_cap:
                 c += 1
+            
+            # Otherwise set the counter back to 0
+            else:
+                c = 0
 
             # Break the function if the delta has been lower than the delta_cap
             # more than the num_exceeded_data set by the user
             if c >= num_exceeded_delta:
                 break
+            
                 
             self.i = i # Keep track of the last iteration
 
@@ -234,9 +251,18 @@ class InvasiveWeed(): # Define class with model name
     def return_best_fitness_(self):
         return list(self.best_seed_list)
     
+    # Plot best fitness from each iteration/generation
+    def plot_fitnesses_(self):
+        plt.plot(self.best_seed_list)
+        plt.title("Best fitness scores from each iteration/generation")
+        return plt.show()
+    
+    def __str__(self):
+        return  f"InvasiveWeed(pmax = {self.pmax}, maxiter = {self.maxiter}, delta_cap = {self.delta_cap}, num_exceeded_delta = {self.num_exceeded_delta})\n"
+    
 
 
-# In[25]:
+# In[108]:
 
 
 # Perform grid search to find the best parameters based on the params dictionary
@@ -290,30 +316,27 @@ def grid_search(params):
                 
 
 
-# In[29]:
+# In[109]:
 
+
+## Grid search for the best seed (minimum fitness) with different parameters
 
 # Dictionary with parameters to be run for gridsearch
 params = {
-    'pmax' : [10**2, 10**3], # Population max variable
-    'maxiter' : [12, 14, 16], # Max iteration variable
-    'delta_cap' : [10**-4, 10**-5, 10**-6], # Define the change to be accounted for in num_exceeded_delta
+    'pmax' : [10**2, 10**3, 2000], # Population max variable
+    'maxiter' : [15, 20], # Max iteration variable
+    'delta_cap' : [10**-6, 10**-8], # Define the change to be accounted for in num_exceeded_delta
     
     # This variable defines how many times the difference between the fitness score of the last iteration versus
     # The second last iteration can exeed the value of delta_cap (the max delta value)
-    'num_exceeded_delta' : [4, 6, 8]
+    'num_exceeded_delta' : [6, 8, 10]
 }
 
 # Run gridsearch for parameters
+print("Running gridsearch with specified parameters to find the best seed...")
 best_params, best_fitness, best_round_fitnesses = grid_search(params)
 
-
-# In[42]:
-
-
 # plot best fitness score for each iteration in the best model from gridseach
-
 plt.plot(best_round_fitnesses)
 plt.title("Fitness scores from each iteration in the best model from gridseach")
 plt.show()
-
